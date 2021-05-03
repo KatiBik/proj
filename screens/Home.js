@@ -43,6 +43,8 @@ const Home = ({ state, props }) => {
         return "https://a-static.besthdwallpaper.com/yn-gvz---1920x1440-27988_25.jpg";
       case "עיצוב שיער":
         return "https://cdn.shopify.com/s/files/1/0130/7233/4948/collections/hair-cutting-scissors-959603_1600x.jpg?v=1602901033";
+        case "עיצוב שיער":
+        return "https://cdn.shopify.com/s/files/1/0130/7233/4948/collections/hair-cutting-scissors-959603_1600x.jpg?v=1602901033";
       default:
         return "https://www.resetunlock.com/wp-content/plugins/accelerated-mobile-pages/images/SD-default-image.png";
     }
