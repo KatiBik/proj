@@ -8,7 +8,7 @@ import strings from "../strings.json";
 import Card from "../components/Card";
 import { LinearGradient } from "expo-linear-gradient";
 import linearGradient from "../components/linearGradient";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity} from "react-native";
 
 const { width } = Dimensions.get("screen");
 
