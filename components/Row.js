@@ -27,7 +27,8 @@ const Row = (props) => {
     );
   };
   return (
-    <TouchableOpacity onPress={() => alert("hey")} style={{ marginTop: 10 }}>
+    <TouchableOpacity onPress={() => props.navigation.navigate("CalendarBuss")}>
+     
       <View
         style={{
           height: 80,
