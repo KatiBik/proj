@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 export const NavigateReactContext = React.createContext();
 import { View, ActivityIndicator } from "react-native";
 import style from "../style";
-import { getBussiness, getTypes, getAppointment } from "../api";
+import { getBussiness, getTypes, getAppointment,getTreatments,getUsers } from "../api";
 
 export class NavigateProvider extends React.Component {
   constructor(props) {
@@ -18,7 +18,9 @@ export class NavigateProvider extends React.Component {
     const user = await AsyncStorage.getItem("user").then((res) =>
       JSON.parse(res)
     );
+    const users = await getUsers();
     const bussiness = await getBussiness();
+    const treatments = await getTreatments();
     const appointment = await getAppointment();
     const types = await getTypes();
     const myBussiness = bussiness.find((item) => item.userEmail === user.email);
@@ -26,7 +28,9 @@ export class NavigateProvider extends React.Component {
     this.setState(
       {
         user,
+        users,
         bussiness,
+        treatments,
         isBussiness,
         myBussiness,
         types,

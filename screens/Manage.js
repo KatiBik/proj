@@ -17,6 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import { imageUpload, put_bussiness } from "../api";
 import { LinearGradient } from "expo-linear-gradient";
 import linearGradient from "../components/linearGradient";
+import AsyncStorage from "@react-native-community/async-storage";
 
 class ManageSection extends React.Component {
   static contextType = NavigateReactContext;
@@ -33,6 +34,7 @@ class ManageSection extends React.Component {
     );
   }
 }
+
 const Manage = ({ state, props, actions }) => {
   const photo = state?.myBussiness?.photos;
   const [isRegister, setRegister] = useState(false);
@@ -62,6 +64,7 @@ const Manage = ({ state, props, actions }) => {
       console.log(E);
     }
   };
+
   const register = async () => {
     setRegister(true);
     let url = state?.myBussiness?.photos;
@@ -90,21 +93,36 @@ const Manage = ({ state, props, actions }) => {
     setRegister(false);
   };
 
+  const logout=()=> {
+    AsyncStorage.clear();
+    alert("יש להפעיל את האפליקציה מחדש");
+    //props.NavigateReactContext.navigate("Loading");
+    
+  };
+
   if (state.isBussiness) {
     return (
       <KeyboardAvoidingView behavior="position" style={style.normalContainer}>
         <LinearGradient {...linearGradient} />
-        <View style={{ backgroundColor: "#ffcce6" }}>
+        <View style={{ backgroundColor: "#ffcce6"}}>
           <Text
             style={{
               fontSize: 20,
               textAlign: "center",
-              padding: 20,
-              marginTop: 20,
+              padding: 25,
+              marginTop: 30,
             }}
           >
             {strings.manage_bussiness}
           </Text>
+
+          <TouchableOpacity
+            hitSlop={{ left: 10, right: 10, top: 10, bottom: 10 }}
+            style={{ position: "absolute", bottom: 5, right: 10 }}
+            onPress={() => logout()}
+          >
+            <Text style={{}}>{"התנתק"}</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             hitSlop={{ left: 10, right: 10, top: 10, bottom: 10 }}
@@ -156,7 +174,7 @@ const Manage = ({ state, props, actions }) => {
                 style={[style.input, { paddingLeft: 50 }]}
                 onChangeText={setAddress}
                 value={address}
-                placeholder={strings.address_in_eng}
+                placeholder={state.myBussiness.b_address}
               />
               <AntDesign name="pushpin" size={24} style={style.positionLogo} />
             </View>

@@ -14,6 +14,7 @@ const { width } = Dimensions.get("screen");
 
 const Row = (props) => {
   const item = props.item;
+  const onPress = props.onPress;
   const Divide_Rating = 20;
   const Max_Rating = 5;
   const points =
@@ -27,8 +28,7 @@ const Row = (props) => {
     );
   };
   return (
-    <TouchableOpacity onPress={() => props.navigation.navigate("CalendarBuss")}>
-     
+    <TouchableOpacity onPress={props.onPress}>
       <View
         style={{
           height: 80,
@@ -36,7 +36,7 @@ const Row = (props) => {
           backgroundColor: "white",
           margin: 10,
           borderRadius: 10,
-          marginTop: -10,
+          marginTop: -9,
         }}
       >
         <Image

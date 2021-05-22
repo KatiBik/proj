@@ -18,6 +18,7 @@ const Loading = (props) => {
       StartImageRotateFunction();
       setTimeout(() => {
         props.navigation.navigate(user ? "CoverNavigate" : "Login");
+        //props.navigation.navigate("Login");
       }, 2000);
     }
     splash();

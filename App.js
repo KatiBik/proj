@@ -6,6 +6,51 @@ import Register from "./screens/Register";
 import Terms from "./screens/Terms";
 import RegisterManager from "./screens/RegisterManager";
 import AppContext from "./components/AppContext";
+import {LocaleConfig} from 'react-native-calendars';
+
+LocaleConfig.locales.en = LocaleConfig.locales[''];
+LocaleConfig.locales.he = {
+  monthNames: [
+    'ינואר',
+    'פברואר',
+    'מרץ',
+    'אפריל',
+    'מאי',
+    'יוני',
+    'יולי',
+    'אוגוסט',
+    'ספטמבר',
+    'אוקטובר',
+    'נובמבר',
+    'דצמבר',
+  ],
+  monthNamesShort: [
+    'ינואר',
+    'פברואר',
+    'מרץ',
+    'אפריל',
+    'מאי',
+    'יוני',
+    'יולי',
+    'אוגוסט',
+    'ספטמבר',
+    'אוקטובר',
+    'נובמבר',
+    'דצמבר',
+  ],
+  dayNames: [
+    'Dimanche',
+    'Lundi',
+    'Mardi',
+    'Mercredi',
+    'Jeudi',
+    'Vendredi',
+    'Samedi',
+  ],
+  dayNamesShort: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'],
+};
+
+LocaleConfig.defaultLocale = 'he';
 
 const AppStack = createStackNavigator({
   CoverNavigate: {

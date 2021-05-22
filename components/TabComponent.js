@@ -8,8 +8,11 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Manage from "../screens/Manage";
 import History from "../screens/History";
 import ListCategories from "../screens/ListCategories";
+import BussinessCard from "../screens/BussinessCard";
+import Calendar from "../screens/Calendar";
 import RegisterBussiness from "../screens/RegisterBussiness";
 import Messages from "../screens/Messages";
+import strings from "../strings.json";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -21,13 +24,24 @@ function HomeMenu() {
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{ headerShown: false }}
+        options={{ headerShown: false}}
       />
       <Stack.Screen
         name="ListCategories"
         component={ListCategories}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="BussinessCard"
+        component={BussinessCard}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Calendar"
+        component={Calendar}
+        options={{ headerShown: false }}
+      />
+      
     </Stack.Navigator>
   );
 }
@@ -58,12 +72,18 @@ class MainTabScreen extends React.Component {
     super(props);
     this.state = {};
   }
+
+  async componentDidMount() {
+
+  }  
+
   render() {
     return (
+
       <Tab.Navigator
         initialRouteName="Home"
         tabBarOptions={{
-          activeTintColor: "#ffffff",
+          activeTintColor: "#a31ea5",
           adaptive: true,
           style: {
             backgroundColor: "#ffcce6",
@@ -96,7 +116,7 @@ class MainTabScreen extends React.Component {
           name="History"
           component={History}
           options={{
-            tabBarLabel: "היסטוריה",
+            tabBarLabel: strings.history,
             tabBarIcon: () => (
               <FontAwesome name="history" color={colorOfTab} size={24} />
             ),

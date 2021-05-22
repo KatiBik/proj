@@ -1,4 +1,5 @@
 const API_URL = "http://proj.ruppin.ac.il/bgroup21/prod/";
+//const API_URL = "http://cdb1c3940402.ngrok.io/";
 
 export const authentication = async (email, password) => {
   let returnedObj = null;
@@ -117,6 +118,30 @@ export const imageUpload = async (imgUri, picName) => {
     });
   return url;
 };
+
+export const getUsers = async () => {
+  let returnedObj = null;
+  await fetch(API_URL + "api/User", {
+    method: "GET", // 'GET', 'POST', 'PUT', 'DELETE', etc.
+    headers: new Headers({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }),
+  }) // Call the fetch function passing the url of the API as a parameter
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function (data) {
+      if (data != "could not get all the users!") {
+        returnedObj = data;
+      } else {
+        returnedObj = null;
+      }
+    })
+    .catch(function (err) {
+      alert(err);
+    });
+  return returnedObj;
+};
+
 export const getBussiness = async () => {
   let returnedObj = null;
   await fetch(API_URL + "api/Bussiness", {
@@ -139,6 +164,7 @@ export const getBussiness = async () => {
     });
   return returnedObj;
 };
+
 export const register_bussiness = async (bussiness) => {
   let returnedObj = null;
   await fetch(API_URL + "api/bussiness/", {
@@ -270,6 +296,29 @@ export const getTreatmentByID = async (id) => {
   return returnedObj;
 };
 
+export const getTreatments = async () => {
+  let returnedObj = null;
+  await fetch(API_URL + `api/treatment/`, {
+    method: "GET", // 'GET', 'POST', 'PUT', 'DELETE', etc.
+    headers: new Headers({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }),
+  }) // Call the fetch function passing the url of the API as a parameter
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function (data) {
+      if (data != `Treatments was not found!!!`) {
+        returnedObj = data;
+      } else {
+        returnedObj = null;
+      }
+    })
+    .catch(function (err) {
+      alert(err);
+    });
+  return returnedObj;
+};
+
 export const getAppointment = async () => {
   let returnedObj = null;
   await fetch(API_URL + "api/Appointment", {
@@ -282,6 +331,40 @@ export const getAppointment = async () => {
     .then((resp) => resp.json()) // Transform the data into json
     .then(function (data) {
       if (data != "could not get all the Appointment!") {
+        returnedObj = data;
+      } else {
+        returnedObj = null;
+      }
+    })
+    .catch(function (err) {
+      alert(err);
+    });
+  return returnedObj;
+};
+
+export const setAppointment = async (appointment) => {
+  let returnedObj = null;
+  await fetch(API_URL + "api/Appointment", {
+    method: "POST", // 'GET', 'POST', 'PUT', 'DELETE', etc.
+    headers: new Headers({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }),
+    body: JSON.stringify({
+      appointmentID: appointment.appointmentID,
+      appDate: appointment.appDate,
+      UserEmail: appointment.UserEmail,
+      BussID: appointment.BussID,
+      TreatID: appointment.TreatID,
+    }),
+  }) // Call the fetch function passing the url of the API as a parameter
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function (data) {
+      if (
+        data !=
+          `appointment was not created in DB!!!` &&
+        data != `user not exist`
+      ) {
         returnedObj = data;
       } else {
         returnedObj = null;

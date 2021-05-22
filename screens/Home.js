@@ -5,10 +5,12 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import CardCategory from "../components/CardCategory";
 import { NavigateReactContext } from "../components/NavigateProvider";
 import strings from "../strings.json";
-import Card from "../components/Card";
+import AsyncStorage from "@react-native-community/async-storage";
+import FavoriteCard from "../components/FavoriteCard";
 import { LinearGradient } from "expo-linear-gradient";
 import linearGradient from "../components/linearGradient";
 import { StyleSheet, TouchableOpacity} from "react-native";
+import BussinessCalendar from "../components/BussinessCalendar";
 
 const { width } = Dimensions.get("screen");
 
@@ -16,6 +18,7 @@ class HomeSection extends React.Component {
   constructor(props) {
     super(props);
   }
+ 
   static contextType = NavigateReactContext;
   render() {
     return <Home state={this.context.state} props={this.props} />;
@@ -23,56 +26,69 @@ class HomeSection extends React.Component {
 }
 
 const Home = ({ state, props }) => {
+  
+  const isBussiness = state.isBussiness;
+  const appointment = state.appointment;
   const bussiness = state.bussiness;
+  const treatments = state.treatments;
+  const myBussiness = state.myBussiness;
   const types = state.types;
   const [search, onSearch] = useState("");
-  const renderItem = ({ item }) => (
-    <Card
-      onPress={
-        () => alert(item.Bussiness_name)
-     
-      }
-      item={item}
-    />
-  );
-  const checkCategory = (name) => {
-    switch (name) {
-      case "פנים":
-        return "https://kbh.co.il/wp-content/uploads/2020/02/afspraak1.jpg";
-      case "גבות":
-        return "https://a-static.besthdwallpaper.com/yn-gvz---1920x1440-27988_25.jpg";
-      case "עיצוב שיער":
-        return "https://cdn.shopify.com/s/files/1/0130/7233/4948/collections/hair-cutting-scissors-959603_1600x.jpg?v=1602901033";
-        case "פדיקור מניקור":
-        return "https://www.morbarel.co.il/wp-content/uploads/2017/06/Layer-1395.jpg";
-      default:
-        return "https://www.resetunlock.com/wp-content/plugins/accelerated-mobile-pages/images/SD-default-image.png";
-    }
+  
+  const renderItem = ({ item }) => {
+    
+      return (
+        <FavoriteCard
+          onPress={() =>  
+            props.navigation.navigate("BussinessCard",
+              {
+                bussiness:item,
+                  treatments: treatments.filter((obj) => {
+                      return obj.Bussiness_Id==item.Bussiness_Id;
+                  })
+              })
+            
+          }
+          item={item}
+        />
+    );
   };
-
+  
   const renderCategory = ({ item }) => {
     const type = types?.find((obj) => obj.name === item.name);
     return (
       <CardCategory
         onPress={() =>
+          
           props.navigation.navigate("ListCategories", {
             category: item.name,
-            bussiness: bussiness,
+            bussiness: bussiness.filter((obj) => {
+              return obj.type==item.typeId;
+            }),
             type: type.typeId,
           })
         }
         item={item}
-        photo={checkCategory(item.name)}
+        //photo={checkCategory(item.name)}
       />
     );
   };
- // logout=()=> {
-   // AsyncStorage.clear()
-  // this.props.navigation.navigate("login")}
- 
+
+  const logout=()=> {
+    AsyncStorage.clear();
+    alert("יש להפעיל את האפליקציה מחדש");
+    
+  };
+  
   const filterCategories = types?.filter((obj) => {
     return obj.name.toLowerCase().includes(search.toLowerCase());
   });
+
+  if(isBussiness)
+    return(<BussinessCalendar appointment={appointment.filter((obj) => {
+      return obj.BussID==myBussiness.Bussiness_Id;
+    })}></BussinessCalendar>)
+  else
   return (
     <View style={style.normalContainer}>
       <LinearGradient {...linearGradient} />
@@ -81,19 +97,20 @@ const Home = ({ state, props }) => {
           style={{
             fontSize: 20,
             textAlign: "center",
-            padding: 20,
-            marginTop: 20,
+            padding: 5,
+            marginTop: 35,
           }}
         >
           {strings.nameApp}
         </Text>
-        <TouchableOpacity onPress={()=>this.logout()}>
-<Text>{"התנתק"}</Text>
+      <TouchableOpacity onPress={()=>logout()}>
+        <Text style={{marginBottom: 5,marginLeft:5}}>{"התנתק"}</Text>
       </TouchableOpacity>
       </View>
       <View
         style={{
           height: 100,
+          paddingTop:30,
           alignItems: "center",
           justifyContent: "center",
         }}
@@ -107,7 +124,7 @@ const Home = ({ state, props }) => {
           />
           <AntDesign
             style={{ position: "absolute", top: 18, left: 20 }}
-            name="setting"
+            name="search1"
             size={24}
           />
         </View>
@@ -120,7 +137,7 @@ const Home = ({ state, props }) => {
       <View
         style={{
           height: 180,
-          marginTop: -20,
+          marginTop: 0,
         }}
       >
         <FlatList
@@ -134,26 +151,27 @@ const Home = ({ state, props }) => {
       <View
         style={{
           height: 50,
-          marginTop: 30,
+          marginTop: 10,
           justifyContent: "center",
           alignItems: "center",
         }}
       >
         <View
           style={{
-            width: width / 1.5,
-            backgroundColor: "#00ace6",
+            width: width,
+            backgroundColor: "#a31ea5",
             height: 50,
             justifyContent: "center",
             alignItems: "center",
-            borderRadius: 10,
-            borderWidth: 1,
+            borderRadius: 0,
+            borderWidth: 0,
+            marginTop:5
           }}
         >
-          <Text>{strings.favorite_bussiness}</Text>
+          <Text style={{color:"#ffffff"}}>{strings.favorite_bussiness}</Text>
         </View>
       </View>
-      <View style={{ height: 150, marginTop: 20 }}>
+      <View style={{ height: 170, marginTop: 3 }}>
         <FlatList
           initialNumToRender={5}
           data={bussiness?.slice(0, 10)}

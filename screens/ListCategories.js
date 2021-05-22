@@ -22,12 +22,21 @@ const ListCategories = (props) => {
 
   useMemo(async () => {
     const result = await getTreatmentByID(type);
-    setTreatment(result);
+    if(result==null) 
+      setTreatment([]);
+    else
+      setTreatment(result);
   }, [type]);
 
   const [search, onSearch] = useState("");
 
-  const renderItem = ({ item }) => <Row item={item} />;
+  const renderItem = ({ item }) => <Row onPress={
+    () => props.navigation.navigate("BussinessCard",{bussiness:item,
+      treatments: treatment.filter((obj) => {
+        return obj.Bussiness_Id==item.Bussiness_Id;
+      })})
+ 
+  } item={item} />;
 
   const filterBussiness = items.filter((obj) => {
     return obj.Bussiness_name.toLowerCase().includes(search.toLowerCase());
@@ -42,14 +51,14 @@ const ListCategories = (props) => {
             fontSize: 20,
             textAlign: "center",
             padding: 20,
-            marginTop: 20,
+            marginTop: 40,
           }}
         >
           {category}
         </Text>
         <TouchableOpacity
           onPress={() => props.navigation.navigate("Home")}
-          style={{ position: "absolute", top: 40, left: 20 }}
+          style={{ position: "absolute", top: 60, left: 20 }}
           hitSlop={{ left: 10, right: 10, top: 10, bottom: 10 }}
         >
           <AntDesign name="right" size={24} />

@@ -8,7 +8,7 @@ export default styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  normalContainer: { flex: 1 },
+  normalContainer: { flex: 1},
   widthInput: {
     width: width / 1.2,
   },

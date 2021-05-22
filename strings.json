@@ -31,8 +31,12 @@
   "finish_edit": "סיום עריכה",
   "not_have_bussiness": "אין לך חשבון עסקי",
   "press_to_Bussiness": "לחץ כאן כדי ליצור חשבון",
-  "histtory": "היסטוריה",
-  "not_history": "אין היסטוריה",
+  "history": "יומן טיפולים",
+  "not_future_history": "לא נמצאו טיפולים קרובים",
+  "not_old_history": "לא נמצאה הסטוריית טיפולים",
+  "future_history": "טיפולים קרובים",
+  "old_history": "הסטוריית טיפולים",
   "messages": "הודעות",
-  "search_result": "תוצאות חיפוש:"
+  "search_result": "תוצאות חיפוש:",
+  "treatments_type": "סוגי טיפולים:"
 }
