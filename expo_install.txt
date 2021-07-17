@@ -1,0 +1,4 @@
+npm install expo
+npm install
+expo start
+expo build:android
