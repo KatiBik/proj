@@ -1,10 +1,13 @@
 import React, {Component,useMemo} from 'react';
-import {Alert, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {Alert, StyleSheet, Text, View, TouchableOpacity,Linking} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import moment from "moment";
 import { getTreatments,getUsers } from "../api";
+import { NavigateReactContext } from "../components/NavigateProvider";
 
 export default class BussinessCalendar extends Component {
+
+  static contextType = NavigateReactContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -16,25 +19,38 @@ export default class BussinessCalendar extends Component {
   async componentDidMount() {
     const treatments = await getTreatments();
     const users = await getUsers();
+   // const appointment = await getAppointment();
     this.setState(
       {
         users,
         treatments,
+       // appointment
       },
       () => {
         this.setState({ isReady: true });
       }
     );
-    const appointment = this.props.appointment;
+    //const appointment = this.props.appointment;
+
+    
+
     //alert(JSON.stringify(users));
-    this.init(appointment);
+    //this.init();
   }
 
-  init(appointment)
+  init()
   {
+      
+      const appointment = this.context.state.appointment.filter(
+        (item) => item.BussID === this.context.state.myBussiness.Bussiness_Id
+      );
+      
+
+      //const appointment  = this.state.appointment;
+      
       let newItems={};
       let currentDate = "";
-      for (let i = 0; i < appointment.length; i++)
+      for (let i = 0; i < appointment?.length; i++)
       {
           //alert(appointment[i].appDate);
           let date_key = moment(appointment[i].appDate).format(moment.HTML5_FMT.DATE);
@@ -48,7 +64,8 @@ export default class BussinessCalendar extends Component {
 
          // alert(JSON.stringify(user));
           //alert(JSON.stringify(treatment));
-          newItems[date_key].push({item:appointment[i],treatment:treatment,user:user});
+          if(appointment[i].State===1)
+            newItems[date_key].push({item:appointment[i],treatment:treatment,user:user});
       }
 
       this.setState({
@@ -77,22 +94,25 @@ export default class BussinessCalendar extends Component {
   }
 
   loadItems(day) {
-
+    setTimeout(() => {
+    this.init();
+    }, 500); 
   }
 
   renderItem(item) {
 
+    //alert(JSON.stringify(item));
     const startTime = moment(item.item.appDate).format("H:mm");
     return (
       <TouchableOpacity
         testID='item'
         style={[styles.item, {height: item.height}]}
-        onPress={() => alert(JSON.stringify(item))}
+        onPress={() => {Linking.openURL(`tel:${item.user?.phone}`)}}  
       >
-        <Text style={{color:"#a31ea5"}}>{item.treatment.Treatment_name}</Text>
+        <Text style={{color:"#a31ea5"}}>{item.treatment?.Treatment_name}</Text>
         <Text>{startTime}</Text>
         <Text>
-            <Text style={{fontWeight:"bold"}}>{item.user.full_name}: </Text><Text>{item.user.phone}</Text>
+            <Text style={{fontWeight:"bold"}}>{item.user?.full_name}: </Text><Text>{item.user?.phone}</Text>
         </Text>
       </TouchableOpacity>
     );

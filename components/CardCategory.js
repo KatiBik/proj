@@ -11,8 +11,8 @@ const CardCategory = (props) => {
       style={{
         alignItems: "center",
         height: 120,
-        margin: 10,
-        width: 120,
+        margin: 3,
+        width: 110,
       }}
     >
       <Text style={{ fontSize: 15, padding: 0 ,marginTop:15,fontWeight:"bold"}}>{item.name}</Text>
@@ -21,9 +21,9 @@ const CardCategory = (props) => {
         //source={{require({photo})}}
         //source={require(photo)}
         style={{
-          width: 115,
-          height: 115,
-          marginTop:10
+          width: 100,
+          height: 100,
+          marginTop:0
         }}
       />
     </TouchableOpacity>

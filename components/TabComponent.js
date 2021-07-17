@@ -13,6 +13,8 @@ import Calendar from "../screens/Calendar";
 import RegisterBussiness from "../screens/RegisterBussiness";
 import Messages from "../screens/Messages";
 import strings from "../strings.json";
+import { NavigateReactContext } from "../components/NavigateProvider";
+import moment from "moment";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,6 +70,7 @@ function ManageMenu() {
 }
 
 class MainTabScreen extends React.Component {
+  static contextType = NavigateReactContext;
   constructor(props) {
     super(props);
     this.state = {};
@@ -78,10 +81,49 @@ class MainTabScreen extends React.Component {
   }  
 
   render() {
+
+   // alert(JSON.stringify(this.context.state.my_appointment.length) );
+    let initialRouteName = "Home";
+
+    let isNotification = 0;
+    if(this.context.state.isBussiness)
+    {
+      for (let i = 0; i < this.context.state.appointment.length; i++) 
+      {
+        const element = this.context.state.appointment[i];
+        if(!moment(element.appDate).isBefore() && element.State===2
+               && this.context.state.myBussiness.Bussiness_Id === element.BussID)
+        {
+          isNotification = isNotification + 1;
+        }
+      }
+
+    }
+    else
+    {
+      for (let i = 0; i < this.context.state.my_appointment.length; i++) 
+      {
+        const element = this.context.state.my_appointment[i];
+        if(!moment(element.appDate).isBefore() && element.State===3 && !this.context.state.isBussiness)
+        {
+          isNotification = isNotification + 1;
+        }
+      }
+  
+    }
+
+    
+    if(isNotification > 0) 
+    {
+      initialRouteName = "History";
+    }
+
     return (
 
+      
+
       <Tab.Navigator
-        initialRouteName="Home"
+        initialRouteName={initialRouteName}
         tabBarOptions={{
           activeTintColor: "#a31ea5",
           adaptive: true,

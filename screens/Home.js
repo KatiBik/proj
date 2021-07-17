@@ -28,6 +28,7 @@ class HomeSection extends React.Component {
 const Home = ({ state, props }) => {
   
   const isBussiness = state.isBussiness;
+  const user = state.user;
   const appointment = state.appointment;
   const bussiness = state.bussiness;
   const treatments = state.treatments;
@@ -65,6 +66,7 @@ const Home = ({ state, props }) => {
             bussiness: bussiness.filter((obj) => {
               return obj.type==item.typeId;
             }),
+            user:user,
             type: type.typeId,
           })
         }
@@ -136,8 +138,12 @@ const Home = ({ state, props }) => {
       </View>
       <View
         style={{
-          height: 180,
+         // height: 220,
           marginTop: 0,
+          flex: 1,
+          alignItems:"center",
+        flexDirection: 'column',
+        margin: 1
         }}
       >
         <FlatList
@@ -145,7 +151,8 @@ const Home = ({ state, props }) => {
           data={filterCategories}
           renderItem={renderCategory}
           keyExtractor={(item) => item.typeId.toString()}
-          horizontal={true}
+          horizontal={false}
+          numColumns={3}
         />
       </View>
       <View

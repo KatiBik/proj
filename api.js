@@ -1,5 +1,5 @@
 const API_URL = "http://proj.ruppin.ac.il/bgroup21/prod/";
-//const API_URL = "http://cdb1c3940402.ngrok.io/";
+//const API_URL = "http://1e762bca4219.ngrok.io/";
 
 export const authentication = async (email, password) => {
   let returnedObj = null;
@@ -356,6 +356,38 @@ export const setAppointment = async (appointment) => {
       UserEmail: appointment.UserEmail,
       BussID: appointment.BussID,
       TreatID: appointment.TreatID,
+      State:1,
+    }),
+  }) // Call the fetch function passing the url of the API as a parameter
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function (data) {
+      if (
+        data !=
+          `appointment was not created in DB!!!` &&
+        data != `user not exist`
+      ) {
+        returnedObj = data;
+      } else {
+        returnedObj = null;
+      }
+    })
+    .catch(function (err) {
+      alert(err);
+    });
+  return returnedObj;
+};
+
+export const updateAppointment = async (appointment) => {
+  let returnedObj = null;
+  await fetch(API_URL + "api/Appointment", {
+    method: "PUT", // 'GET', 'POST', 'PUT', 'DELETE', etc.
+    headers: new Headers({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }),
+    body: JSON.stringify({
+      appointmentID: appointment.appointmentID,
+      State: appointment.State,
     }),
   }) // Call the fetch function passing the url of the API as a parameter
     .then((resp) => resp.json()) // Transform the data into json

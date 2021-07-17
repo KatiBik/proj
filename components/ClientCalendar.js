@@ -1,18 +1,21 @@
-import React, {Component} from 'react';
+import React, {Component,createRef } from 'react';
 import {Alert, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import moment from "moment";
 import AsyncStorage from "@react-native-community/async-storage";
-import { setAppointment } from "../api";
+import { setAppointment,getAppointment } from "../api";
+import { NavigateReactContext } from "../components/NavigateProvider";
 
 export default class ClientCalendar extends Component {
+  static contextType = NavigateReactContext;
+
   constructor(props) {
     super(props);
 
     //alert(JSON.stringify(props.props.route.params.treatments));
 
     const DISABLED_DAYS = ['Saturday', 'Sunday']
-    
+
     this.state = {
       items: {},
       user:{},
@@ -30,9 +33,19 @@ export default class ClientCalendar extends Component {
 
   }
 
+  
+
   render() {
+    
+    let currentDate = moment();
+    if(currentDate.hour()> 16)
+    {
+      currentDate  = currentDate.add(1,'days');
+    }
+
     return (
       <Agenda
+        //ref={(ref) => this.setState({agendaRef:ref})}
         testID='agenda'
         items={this.state.items}
         loadItemsForMonth={this.loadItems.bind(this)}
@@ -43,6 +56,8 @@ export default class ClientCalendar extends Component {
         onDayPress={(day) => {}}
         pastScrollRange={0}
         futureScrollRange={1}
+        minDate={moment().format("YYYY-MM-DD")}
+        current={currentDate}
         /*
         onMonthChange={(date) => {
           this.setState({
@@ -87,22 +102,60 @@ export default class ClientCalendar extends Component {
   }
 
   loadItems(day) {
-
+    
+    
     //alert(day.dateString);
     setTimeout(() => {
         
         let newItems={};
         newItems[day.dateString] = [];
         let treatments = this.state.treatments;
+
+        let user_appointments = this.context.state.appointment.filter(
+          (item) => item.BussID === treatments[0].Bussiness_Id && item.State === 1 && item.UserEmail === this.state.user.email
+        );
+        
+        let limit = 0;
+        for (let i = 0; i < user_appointments?.length; i++)
+        {
+          let dateToCheck = user_appointments[i].appDate;
+          if(moment(dateToCheck).isSame(new Date(), 'month'))
+            limit = limit + 1;
+        }
+        if(limit >= 6)
+          {
+             alert("הגעתם למכסת התורים עבור עסק זה לחודש הנוכחי");
+             return;
+          }
+        //alert(limit);
+
+
         //alert(JSON.stringify(this.state));
-        let firstHour = moment(day.dateString + " 08:00:00.000");
+        let firstHour;
+        if(moment(day.dateString).isAfter())
+        {
+          firstHour = moment(day.dateString + " 08:00:00.000");
+        }
+        else
+        {
+          let hour = moment().format("HH:mm");
+          firstHour = moment(day.dateString + " " + hour + ":00.000");
+          firstHour = firstHour.add(2, 'hours');
+          if(firstHour.hour() > 16)
+          {
+             alert("אין תורים זמינים , בחרו יום אחר");
+             return;
+          }
+        }
+
         let currentHour = firstHour;
         for (let i = 0; i < 9; i++)
         {
           for (let j = 0; j < treatments.length; j++)
           {
             let item = {treatment:treatments[j],time:currentHour.clone(),user:this.state.user};
-            newItems[day.dateString].push(item);
+            if(!this.checkHourInAppointment(currentHour,treatments[j].Bussiness_Id))
+              newItems[day.dateString].push(item);
             currentHour = currentHour.add(treatments[j].Treatment_duration, 'minutes');
           }
           if(currentHour.hour() > 16)
@@ -118,6 +171,24 @@ export default class ClientCalendar extends Component {
         });
 
     }, 500);   
+  }
+
+  checkHourInAppointment(day_hour,Bussiness_Id)
+  {
+      const appointments = this.context.state.appointment.filter(
+        (item) => item.BussID === Bussiness_Id && item.State === 1
+      );
+
+      for (let j = 0; j < appointments.length; j++)
+      {
+        let item = appointments[j];
+        var minutesDiff = moment(item.appDate).diff(day_hour, 'minutes');
+        if(Math.abs(minutesDiff) < 20)
+        {
+          return true;
+        }
+      }
+      return false;
   }
 
   renderItem(item) {
@@ -141,7 +212,9 @@ export default class ClientCalendar extends Component {
       'קביעת תור',
       'האם לשלוח בקשה לקביעת תור?',
       [
-        {text: 'אישור', onPress: () => this.setAppointment(item)},
+        {text: 'אישור', onPress: () => 
+            this.insertAppointment(item)
+          },
         {text: 'ביטול', onPress: () => console.log('No button clicked'), style: 'cancel'},
       ],
       { 
@@ -150,25 +223,36 @@ export default class ClientCalendar extends Component {
     );
   }
 
-  async setAppointment(cal_appointment) 
+  insertAppointment(cal_appointment)
+  {
+      this.insertAppointmentAsync(cal_appointment);
+  }
+
+  async insertAppointmentAsync(cal_appointment) 
   {
       let date = cal_appointment.time.format("YYYY-MM-DD HH:mm:ss");
       
       //alert(date)
        
-      const appointment = { appointmentID: 0,
+      const new_appointment = { appointmentID: 0,
                 appDate: date,
                 UserEmail: cal_appointment.user.email,
                 BussID: cal_appointment.treatment.Bussiness_Id,
-                TreatID: cal_appointment.treatment.treatmentId}
+                TreatID: cal_appointment.treatment.treatmentId,
+                State:1}
                 ;
       
       //alert(JSON.stringify(appointment));
       //alert(JSON.stringify(this.props));
-      const appou = await setAppointment(appointment);
+      const appou = await setAppointment(new_appointment);
+
+      const appointments = await getAppointment();
+
+      this.context.actions.setAppointments(appointments);
       this.confirmAlert();
       this.props.props.navigation.goBack();
       this.props.props.navigation.goBack();
+
   }
 
   confirmAlert=()=>{

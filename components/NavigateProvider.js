@@ -22,6 +22,9 @@ export class NavigateProvider extends React.Component {
     const bussiness = await getBussiness();
     const treatments = await getTreatments();
     const appointment = await getAppointment();
+    const my_appointment = appointment.filter((obj) => {
+      return obj.UserEmail === user.email;
+    });
     const types = await getTypes();
     const myBussiness = bussiness.find((item) => item.userEmail === user.email);
     const isBussiness = myBussiness ? true : false;
@@ -35,6 +38,7 @@ export class NavigateProvider extends React.Component {
         myBussiness,
         types,
         appointment,
+        my_appointment,
       },
       () => {
         this.setState({ isReady: true });
@@ -45,6 +49,9 @@ export class NavigateProvider extends React.Component {
   actions = {
     setBussiness: (bussiness) => {
       this.setState({ myBussiness: bussiness, isBussiness: true });
+    },
+    setAppointments: (appointments) => {
+      this.setState({ appointment: appointments });
     },
   };
 

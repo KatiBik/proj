@@ -21,7 +21,7 @@
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "0.63.0",
+    "react-native": "^0.63.2",
     "react-native-calendars": "^1.1260.0",
     "react-native-debugger": "^1.1.0",
     "react-native-gesture-handler": "~1.8.0",
@@ -32,7 +32,7 @@
     "react-native-schedule-view": "^1.0.0",
     "react-native-screens": "~2.15.2",
     "react-native-vector-icons": "^8.1.0",
-    "react-native-web": "~0.13.12",
+    "react-native-web": "^0.16.3",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4",
     "rnschedule": "0.0.5"

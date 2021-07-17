@@ -1,5 +1,5 @@
 import React, { useState,useMemo } from "react";
-import { View, Text, FlatList,StyleSheet,Image,ScrollView } from "react-native";
+import { Alert,View, Text, FlatList,StyleSheet,Image,TouchableOpacity,ScrollView,Linking } from "react-native";
 import style from "../style";
 import { NavigateReactContext } from "../components/NavigateProvider";
 import strings from "../strings.json";
@@ -7,39 +7,62 @@ import Row from "../components/Row";
 import { LinearGradient } from "expo-linear-gradient";
 import linearGradient from "../components/linearGradient";
 import moment from "moment";
+import { updateAppointment,getAppointment } from "../api";
+
+
 //import { ScrollView } from "react-native-gesture-handler";
 
 class HistoryTab extends React.Component {
   static contextType = NavigateReactContext;
   constructor(props) {
     super(props);
-    
   }
+
   render() {
-          return <History state={this.context.state} props={this.props} />;
+      return (
+        <History actions={this.context.actions} state={this.context.state} props={this.props} />
+      );
   }
+          
 
 }
 
-const History = ({ state, props }) => {
+const History = ({ actions , state, props }) => {
   
   const isBussiness = state.isBussiness;
-  let appointments = [];
+  let appointments = state?.appointment;
+
+  appointments = appointments.sort(function(a, b) { 
+    if(a.appDate < b.appDate) { return -1; }
+    if(a.appDate > b.appDate) { return 1; }
+    return 0;
+  });
+
   if(state.isBussiness)
   {
+    appointments = appointments.filter(
+      (item) => item.BussID === state.myBussiness.Bussiness_Id && item.State != 3
+    );
+    /*
     appointments = useMemo(() => {
       return state?.appointment?.filter(
         (item) => item.BussID === state.myBussiness.Bussiness_Id
       );
     }, []);
+    */
   }
   else
   {
+    appointments = appointments.filter(
+      (item) => item.UserEmail === state.user.email && item.State != 2
+    );
+    /*
     appointments = useMemo(() => {
       return state?.appointment?.filter(
         (item) => item.UserEmail === state.user.email
       );
     }, []);
+    */
   
   }
 
@@ -61,33 +84,112 @@ const History = ({ state, props }) => {
   let old_appointments = my_appointments.filter((obj) => moment(obj.item.appDate) < moment());
 
   //alert(JSON.stringify(future_appointments));
- 
+
+  const confirmAlert=()=>{
+    Alert.alert(
+      'תור בוטל בהצלחה',
+      'התראת ביטול נשלחה',
+      [
+        {text: 'סגור', onPress: () => console.log('ok')},
+      ],
+      { 
+        cancelable: true 
+      }
+    );
+  }
+
+
+  const openTwoButtonAlert=(item,state)=>{
+
+    if(item.item.State > 1) return;
+
+    Alert.alert(
+      'ביטול תור',
+      'האם לבטל בקשה לקביעת תור?',
+      [
+        {text: 'אישור', onPress: () => 
+          cancelAppointment(item,state)
+          },
+        {text: 'ביטול', onPress: () => console.log('No button clicked'), style: 'cancel'},
+      ],
+      { 
+        cancelable: true 
+      }
+    );
+  }
+
+  const cancelAppointment = async(item,state) =>{
+      const new_appointment = { appointmentID: item.item.appointmentID,State:state}
+      await updateAppointment(new_appointment);
+      const appointments = await getAppointment();
+      actions.setAppointments(appointments);
+      confirmAlert();
+  }  
+
+  
   const renderItem = ({ item }) => {
-    //alert(JSON.stringify(item));
-    //alert(item.history);
+ 
     const startTime = moment(item.item.appDate).format("DD/MM/YYYY H:mm");
 
     let bk = "#ffffff";
-     if(item.history < 0)
+    let date_bk = "transparent";
+    let date_color = "#222";
+    let date_text = "";
+    //alert(JSON.stringify(item));
+
+    
+
+    if(item.history < 0)
         bk = "#eeeeee";
+    
+    else
+    {
+      if(item.item.State === 3 && !isBussiness || isBussiness && item.item.State === 2)
+          {
+            date_bk = "#B0171F";
+            date_color = "#ffffff";
+            date_text =  "(בוטל)"
+          }
+    }
 
     return (
       
       <View
         style={[styles.item,{backgroundColor:bk}]}
         >
-         <Text>{startTime}</Text>
+         <Text style={{alignSelf: 'flex-end',padding:5,backgroundColor:date_bk,color:date_color}}>{startTime} {date_text}</Text>
         { isBussiness ? (
+          <TouchableOpacity
+              
+          style={{ marginTop:5,width:"100%",backgroundColor:"#ffffff",marginRight:5,borderRadius:10}}
+          hitSlop={{ left: 10, right: 10, top: 10, bottom: 10 }}
+          onPress={() => {openTwoButtonAlert(item,3);}  
+          }
+          >
             <View
             style={styles.bussinessitem}
              >
             <Text style={{color:"#a31ea5"}}>{item.treatment.Treatment_name}</Text>
+            <TouchableOpacity
+            style={{ marginTop:5,width:"50%",backgroundColor:"#ffffff",marginRight:5,borderRadius:10}}
+            hitSlop={{ left: 10, right: 10, top: 10, bottom: 10 }}
+            onPress={() => {Linking.openURL(`tel:${item.user.phone}`)}  
+            }>
             <Text>
                 <Text style={{fontWeight:"bold"}}>{item.user.full_name}: </Text><Text>{item.user.phone}</Text>
             </Text>
-          </View>
+            </TouchableOpacity>
+          </View></TouchableOpacity>
 
           ):(
+            <TouchableOpacity
+              
+              style={{ marginTop:5,width:"100%",backgroundColor:"#ffffff",marginRight:5,borderRadius:10}}
+              hitSlop={{ left: 10, right: 10, top: 10, bottom: 10 }}
+              onPress={() => {openTwoButtonAlert(item,2);}  
+              }
+              >
+             
           <View style={{
             flexDirection: "row",
             margin: 2,
@@ -108,7 +210,9 @@ const History = ({ state, props }) => {
                 <Text style={{color:"#a31ea5",fontWeight:"bold"}}>{item.bussiness.Bussiness_name}</Text>
                 <Text style={{marginLeft:5}}>{item.treatment.Treatment_name}</Text>
             </View>
-          </View>)}
+          </View>
+
+          </TouchableOpacity>)}
         
       </View>
       
@@ -117,8 +221,7 @@ const History = ({ state, props }) => {
   }
 
   return (
-    
-    <View style={styles.normalContainer}>
+    <ScrollView>
       <LinearGradient {...linearGradient} />
       <View style={{ backgroundColor: "#ffcce6" }}>
         <Text
@@ -147,6 +250,7 @@ const History = ({ state, props }) => {
             data={future_appointments || []}
             renderItem={renderItem}
             keyExtractor={(item) => item.item.appointmentID.toString()}
+            
           />
         </View>
       )}
@@ -157,7 +261,7 @@ const History = ({ state, props }) => {
         </View>
       ) : (
         
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: 20,height:300 }}>
           <View style={[styles.title,{backgroundColor:"#dddddd"}]}>
             <Text style={{ fontSize: 18,color:"#222222" }}>{strings.old_history}</Text>
           </View>
@@ -172,7 +276,7 @@ const History = ({ state, props }) => {
         </View>
         
       )}
-    </View>
+    </ScrollView>
     
   );
 };

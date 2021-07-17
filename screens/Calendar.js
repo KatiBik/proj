@@ -7,7 +7,7 @@ import ClientCalendar from "../components/ClientCalendar";
 const Calendar = (props) => {
 
     //alert(JSON.stringify(props));
-    return (<ClientCalendar props={props}/>);
+    return (<ClientCalendar style={{margin:0}} props={props}/>);
 
 };
 
