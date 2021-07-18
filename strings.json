@@ -33,21 +33,9 @@
   "press_to_Bussiness": "לחץ כאן כדי ליצור חשבון",
   "history": "יומן טיפולים",
   "not_future_history": "לא נמצאו טיפולים קרובים",
-<<<<<<< HEAD
-<<<<<<< HEAD
   "not_old_history": "לא נמצאה היסטוריית טיפולים",
   "future_history": "טיפולים קרובים",
   "old_history": "היסטוריית טיפולים",
-=======
-  "not_old_history": "לא נמצאה הסטוריית טיפולים",
-  "future_history": "טיפולים קרובים",
-  "old_history": "הסטוריית טיפולים",
->>>>>>> c331461c432d0ce367134bd3a0bcbd37ea08a117
-=======
-  "not_old_history": "לא נמצאה הסטוריית טיפולים",
-  "future_history": "טיפולים קרובים",
-  "old_history": "הסטוריית טיפולים",
->>>>>>> c331461c432d0ce367134bd3a0bcbd37ea08a117
   "messages": "הודעות",
   "search_result": "תוצאות חיפוש:",
   "treatments_type": "סוגי טיפולים:"
